@@ -79,6 +79,7 @@ Listener::on_accept(asio::error_code ec, tcp::socket socket)
         std::cout << "Accepted \n";
         auto session = std::make_unique<Session>(std::move(socket), id);
         session->start();
+        session->receiver_handler = receiver_handler;
         {
             std::lock_guard<std::mutex> lock(session_list_mutex);
             alive_sessions.push_back(std::move(session));

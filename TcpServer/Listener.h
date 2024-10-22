@@ -28,6 +28,8 @@ public:
     void
         run();
 
+    std::function<void(std::vector<char>)> receiver_handler;
+
 private:
     std::mutex session_list_mutex;
 

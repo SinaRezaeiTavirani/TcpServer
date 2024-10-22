@@ -19,17 +19,22 @@ void Session::start()
 
 void Session::do_read()
 {
-	auto v_buffer = std::make_shared<std::vector<char>>(8192);
+	auto v_buffer = std::make_shared<std::vector<char>>(max_length);
 	socket_.async_read_some(asio::buffer(v_buffer->data(), v_buffer->size()),
 		[this, v_buffer](asio::error_code ec, std::size_t length)
 		{
 			if (!ec)
 			{
-				std::string data(v_buffer->begin(), v_buffer->end());
-				std::cout << data;
-				std::string received_ack = "I've receive your message\n";
+				if (receiver_handler) {
+					receiver_handler(*v_buffer);  // Invoke the handler
+				}
+				else {
+					std::cout << "No handler defined!\n";
+				}
+
+				std::string received_ack = "Server received your message\n";
 				const std::vector<char> rec_ack_vec(received_ack.begin(), received_ack.end());
-				do_write(rec_ack_vec,length);
+				do_write(rec_ack_vec);
 			}
 			else {
 				std::cout << ec.message() << std::endl;
@@ -40,7 +45,7 @@ void Session::do_read()
 		});
 }
 
-void Session::do_write(const std::vector<char>& data, std::size_t length)
+void Session::do_write(const std::vector<char>& data)
 {
 	
 	socket_.async_write_some(asio::buffer(data.data(), data.size()),
@@ -48,8 +53,6 @@ void Session::do_write(const std::vector<char>& data, std::size_t length)
 		{
 			if (!ec)
 			{
-
-				std::cout << "data wrote\n";
 				do_read();
 			}
 			else {

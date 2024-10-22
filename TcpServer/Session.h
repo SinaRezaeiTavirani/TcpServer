@@ -18,12 +18,14 @@ public:
 	~Session();
 	void start();
 
+	std::function<void(std::vector<char>)> receiver_handler;
+
 private:
 	void do_read();
 
-	void do_write(const std::vector<char>& data, std::size_t length);
+	void do_write(const std::vector<char>& data);
 
-	enum { max_length = 1024 };
+	enum { max_length = 8192};
 	bool is_alive_ = true;
 	int id_;
 };

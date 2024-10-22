@@ -22,9 +22,15 @@ int main(int argc, char* argv[])
 
     asio::io_context ioc{threads};
 
-    std::make_shared<Listener>(
+    std::shared_ptr<Listener> listener =  std::make_shared<Listener>(
         ioc,
-        tcp::endpoint{address, port})->run();
+        tcp::endpoint{address, port});
+
+    listener->run();
+    listener->receiver_handler = [](std::vector<char> data) {
+        std::cout << data.data();
+    };
+
 
     std::vector<std::thread> v;
     v.reserve(threads - 1);
