@@ -7,42 +7,36 @@
 #include <memory>
 #include <string>
 #include <thread>
+#include <unordered_map>
 #include <vector>
 
 #include "Session.h"
-            
 
-
-
-class Listener : public std::enable_shared_from_this<Listener>
-{
-    asio::io_context& ioc_;
-    tcp::acceptor acceptor_;
+class Listener {
+	asio::io_context& ioc_;
+	tcp::acceptor acceptor_;
 
 public:
-    Listener(
-        asio::io_context& ioc,
-        tcp::endpoint endpoint);
+	Listener(asio::io_context& ioc, tcp::endpoint endpoint);
 
-    // Start accepting incoming connections
-    void
-        run();
+	void run();
 
-    std::function<void(std::vector<char>)> receiver_handler;
+	std::function<void(int session_id, std::vector<char>&)> receiver_handler;
+	void send_data(const int client_id, const std::vector<char>& data);
+
+	void broad_cast(const std::vector<char>& data);
+
+
 
 private:
-    std::mutex session_list_mutex;
+	std::mutex session_list_mutex;
 
-    void
-        fail(asio::error_code ec, char const* what);
+	void fail(asio::error_code ec, char const* what);
 
-    void
-        do_accept();
+	void do_accept();
 
-    void
-        on_accept(asio::error_code ec, tcp::socket socket);
+	void on_accept(asio::error_code ec, tcp::socket socket);
 
-    std::atomic<int> id = 1000;
-    std::vector<std::unique_ptr<Session>> alive_sessions;
+	std::atomic<int> id = 1000;
+	std::unordered_map<int, std::unique_ptr<Session>> session_map;
 };
-

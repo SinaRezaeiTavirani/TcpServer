@@ -9,8 +9,7 @@
 
 using asio::ip::tcp;
 
-class Session
-{
+class Session {
 	asio::ip::tcp::socket socket_;
 
 public:
@@ -18,14 +17,14 @@ public:
 	~Session();
 	void start();
 
-	std::function<void(std::vector<char>)> receiver_handler;
+	std::function<void(int session_id, std::vector<char>&)> receiver_handler;
+	void do_write(const std::vector<char>& data);
 
 private:
 	void do_read();
 
-	void do_write(const std::vector<char>& data);
 
-	enum { max_length = 8192};
+	enum { max_length = 8192 };
 	bool is_alive_ = true;
 	int id_;
 };
