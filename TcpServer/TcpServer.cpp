@@ -9,9 +9,9 @@ using tcp = asio::ip::tcp;
 
 int main(int argc, char* argv[]) {
 	if (argc != 4) {
-		std::cerr << "Usage: server-async <address> <port> <threads>\n"
+		std::cerr << "Usage: TcpServer.exe <address> <port> <threads>\n"
 			<< "Example:\n"
-			<< "    server-async 0.0.0.0 8080 1\n";
+			<< "    TcpServer 0.0.0.0 8080 1\n";
 		return EXIT_FAILURE;
 	}
 	auto const address = asio::ip::make_address(argv[1]);
@@ -24,9 +24,11 @@ int main(int argc, char* argv[]) {
 		std::make_shared<Listener>(ioc, tcp::endpoint{address, port});
 
 	listener->run();
-	listener->receiver_handler = [listener](int session_id, std::vector<char>& data) {
-		std::vector<char> test_data {'s', 'o', 'm', 'e', 'o', 'n', 'e', ' ', 's', 'a', 'i', 'd', ' ', 's', 'o', 'm', 'e', 't', 'h', 'i', 'n', 'g' , '\n'};
-		listener->broad_cast(test_data);
+	listener->receiver_handler = [listener](int session_id, std::vector<char>& data, std::size_t length) {
+		std::string result(length, ' ');
+		std::copy_n(data.data(), std::min(data.size(), length), result.begin());
+
+		std::cout << result << std::endl;
 	};
 
 	std::vector<std::thread> v;

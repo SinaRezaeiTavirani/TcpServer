@@ -21,7 +21,7 @@ public:
 
 	void run();
 
-	std::function<void(int session_id, std::vector<char>&)> receiver_handler;
+	std::function<void(int session_id, std::vector<char>& buffer, std::size_t length)> receiver_handler;
 	void send_data(const int client_id, const std::vector<char>& data);
 
 	void broad_cast(const std::vector<char>& data);

@@ -17,7 +17,7 @@ void Session::do_read() {
 		[this, v_buffer](asio::error_code ec, std::size_t length) {
 			if (!ec) {
 				if (receiver_handler) {
-					receiver_handler(id_, *v_buffer); // Invoke the handler
+					receiver_handler(id_, *v_buffer, length); // Invoke the handler
 				}
 				else {
 					std::cout << "No handler defined!\n";

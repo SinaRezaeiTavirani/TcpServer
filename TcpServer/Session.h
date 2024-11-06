@@ -17,7 +17,7 @@ public:
 	~Session();
 	void start();
 
-	std::function<void(int session_id, std::vector<char>&)> receiver_handler;
+	std::function<void(int session_id, std::vector<char>& buffer, std::size_t length)> receiver_handler;
 	void do_write(const std::vector<char>& data);
 
 private:
